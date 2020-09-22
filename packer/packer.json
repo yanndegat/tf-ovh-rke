@@ -1,0 +1,46 @@
+{
+    "min_packer_version": "0.12.0",
+    "variables": {
+        "identity_endpoint": "{{env `OS_AUTH_URL`}}",
+        "region": "{{env `OS_REGION_NAME`}}",
+        "ext_net_id": "",
+        "flavor_name": "s1-4",
+        "tag": "latest",
+        "image_name": "",
+        "ssh_user": "ubuntu",
+        "commit": ""
+    },
+    "builders": [
+        {
+            "name": "ubuntu2004",
+            "type": "openstack",
+            "identity_endpoint": "{{user `identity_endpoint`}}",
+            "region": "{{user `region`}}",
+            "ssh_username": "{{user `ssh_user`}}",
+            "image_name": "{{user `image_name`}}",
+            "source_image_name": "Ubuntu 20.04",
+            "ssh_ip_version": "4",
+            "flavor": "{{user `flavor_name`}}",
+            "networks": [
+                "{{user `ext_net_id`}}"
+            ],
+            "metadata": {
+                "tag": "{{user `tag`}}",
+                "commit": "{{user `commit`}}",
+                "community": "ovh"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "ansible",
+            "user": "{{user `ssh_user`}}",
+            "playbook_file": "../packer.yml",
+            "extra_arguments": [
+                "--extra-vars", "ansible_python_interpreter=/usr/bin/python3",
+                "-b",
+                "-e", "clean_cloud_files=yes"
+            ]
+        }
+    ]
+}

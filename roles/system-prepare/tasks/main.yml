@@ -1,0 +1,44 @@
+---
+# Setup dns
+- name: Ensure systemd-resolved is enabled & started
+  systemd:
+    name: systemd-resolved.service
+    state: started
+    enabled: yes
+
+- name: Create a symbolic link
+  file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    force: yes
+    state: link
+
+- name: 'Copying systemd network files'
+  copy: src="{{ item.src }}" dest="{{ item.dest }}" owner=root group=root mode=0644
+  with_items:
+    - { src: "10-ens3.network", dest : "/etc/systemd/network/" }
+    - { src: "20-ens4.network", dest : "/etc/systemd/network/" }
+    - { src: "99-rke.conf", dest : "/etc/sysctl.d/" }
+  notify:
+    - Systemd | Restart systemd-networkd
+  
+- name: 'Create required {{ item }} directory'
+  file: path="{{ item }}" state=directory owner=root group=root mode=0775
+  with_items: "{{ required_directories }}"
+
+# Setup docker for rke
+- include: setup-docker.yml
+  tags:
+    - setup-docker
+
+###
+# Do some cleaning
+- name: Clean files
+  shell: "rm -Rf /var/lib/cloud/data/* /var/lib/cloud/instances/* /tmp/modules /etc/ssh/ssh_host*key*"
+  when: clean_cloud_files|bool
+
+- name: Empty machine id
+  file: path=/etc/machine-id content=""
+  when: clean_cloud_files|bool

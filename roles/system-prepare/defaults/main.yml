@@ -1,0 +1,7 @@
+---
+required_directories:
+  - /mnt/volumes
+
+docker_version: 18.09
+
+clean_cloud_files: no

@@ -1,0 +1,7 @@
+[Match]
+Name=ens4 eth1
+[Network]
+DHCP=ipv4
+[DHCP]
+# favor ens3 default routes over ens4
+RouteMetric=1024

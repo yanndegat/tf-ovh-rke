@@ -1,0 +1,18 @@
+---
+- name: APT | Upgrade
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: Systemd | Restart systemd-networkd
+  systemd:
+    name: systemd-networkd.service
+    state: restarted
+    enabled: yes
+
+- name: Systemd | Restart systemd-resolved
+  systemd:
+    name: systemd-resolved.service
+    state: restarted
+    enabled: yes
+

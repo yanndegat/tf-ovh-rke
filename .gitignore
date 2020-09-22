@@ -1,0 +1,40 @@
+packer.retry
+
+# Terraform files
+.terraform
+terraform.tfstate
+terraform.tfvars
+*.tfstate*
+crash.log
+
+# terragrunt files
+live/*
+.terragrunt-cache
+
+# OS X files
+.history
+.DS_Store
+
+# IntelliJ files
+.idea_modules
+*.iml
+*.iws
+*.ipr
+.idea/
+build/
+*/build/
+out/
+
+# Cache objects
+packer_cache/
+
+# creadentials
+openrc
+ovhrc
+id_rsa*
+*clouds.yaml
+
+#editors
+*~
+.\#*
+

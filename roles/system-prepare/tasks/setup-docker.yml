@@ -1,0 +1,45 @@
+---
+- name: Add Docker Apt signing key
+  apt_key:
+    url: 'https://download.docker.com/linux/ubuntu/gpg'
+    state: present
+
+- name: Add Docker deb repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    state: present
+  notify:
+    - APT | Upgrade
+
+- copy:
+    dest: /etc/apt/preferences.d/docker-ce
+    content: |
+      Package: docker-ce
+      Pin: version {{ docker_version }}*
+      Pin-Priority: 1002
+
+- name: Install docker packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    install_recommends: no
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - docker-ce
+
+- name: Add ubuntu user in the docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes
+
+- name: Ensure docker is service is enabled and started
+  systemd:
+    name: docker.service
+    state: started
+    enabled: yes
