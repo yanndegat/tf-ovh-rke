@@ -1,3 +1,14 @@
+locals {
+  tcp_pairs = [
+    for pair in setproduct(
+      var.additional_tcp_ports,
+      var.remote_ssh_prefixes) : {
+      port   = pair[0]
+      prefix = pair[1]
+    }
+  ]
+}
+
 data openstack_networking_network_v2 ext_net {
   name      = "Ext-Net"
   tenant_id = ""
@@ -16,6 +27,20 @@ resource openstack_networking_secgroup_rule_v2 bastion_in_ssh {
   port_range_min    = 22
   port_range_max    = 22
   remote_ip_prefix  = tolist(var.remote_ssh_prefixes)[count.index]
+  security_group_id = openstack_networking_secgroup_v2.bastion_sg.id
+}
+
+resource openstack_networking_secgroup_rule_v2 additional_tcp {
+  for_each = {
+    for pair in local.tcp_pairs : "${pair.port}.${pair.prefix}" => pair
+  }
+
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = each.value.port
+  port_range_max    = each.value.port
+  remote_ip_prefix  = each.value.prefix
   security_group_id = openstack_networking_secgroup_v2.bastion_sg.id
 }
 

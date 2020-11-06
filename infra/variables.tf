@@ -74,3 +74,9 @@ variable ssh_user {
   description = "Name of the user used in image_name"
   default     = "ubuntu"
 }
+
+variable bastion_additional_tcp_ports {
+  description = "additional tcp ports to open on bastion host"
+  type        = set(number)
+  default     = []
+}

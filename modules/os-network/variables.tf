@@ -37,3 +37,9 @@ variable remote_ssh_prefixes {
   type        = set(string)
   default     = []
 }
+
+variable additional_tcp_ports {
+  description = "additional tcp ports to open on bastion host"
+  type        = set(number)
+  default     = []
+}

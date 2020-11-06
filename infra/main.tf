@@ -49,9 +49,10 @@ data openstack_networking_network_v2 ext_net {
 module network {
   source = "github.com/yanndegat/tf-ovh-rke//modules/os-network"
 
-  name                = var.name
-  remote_ssh_prefixes = var.allowed_mgmt_prefixes
-  ssh_keypair         = openstack_compute_keypair_v2.keypair.name
+  name                 = var.name
+  additional_tcp_ports = var.bastion_additional_tcp_ports
+  remote_ssh_prefixes  = var.allowed_mgmt_prefixes
+  ssh_keypair          = openstack_compute_keypair_v2.keypair.name
 }
 
 #
